@@ -1,5 +1,5 @@
 //
-//  BFTaskItem.h
+//  NSFileManager+BoltsExtras.h
 //  DataRecorder
 //
 //  Created by Michael Gray on 8/25/14.
@@ -25,15 +25,40 @@
 
 
 #import <Foundation/Foundation.h>
-#import "Bolts.h"
 
-typedef id(^BFTaskItemActionBlock)();
+@class BFExecutor;
+@class BFTask;
 
-@interface BFTaskItem : NSObject
+@interface NSFileManager (BoltsExtras)
 
-@property (strong, nonatomic) NSString *label;
-@property (strong, nonatomic) BFTaskItemActionBlock action;
 
-+(id)itemWithLabel:(NSString *)inLabel andTaskAction:(BFTaskItemActionBlock)action;
+//
+// by default NSFileManager will dispatch operations to DISPATCH_QUEUE_PRIORITY_DEFAULT
+// Feel free to change!
+
++ (BFExecutor*) defaultExecutor;
++ (void) setDefaultExecutor:(BFExecutor*)executor;
+
+
+
+- (BFTask*)removeItemAtURL:(NSURL *)path;
+
+- (BFTask*)contentsOfDirectoryAtURL:(NSURL *)url
+         includingPropertiesForKeys:(NSArray *)keys
+                            options:(NSDirectoryEnumerationOptions)mask;
+
+
+// OR Overide the Executor if you want!
+
+- (BFTask*)removeItemAtURL:(NSURL *)path
+              withExecutor:(BFExecutor*)executor;
+
+- (BFTask*)contentsOfDirectoryAtURL:(NSURL *)url
+         includingPropertiesForKeys:(NSArray *)keys
+                            options:(NSDirectoryEnumerationOptions)mask
+                       withExecutor:(BFExecutor*)executor;
+
+
+
 
 @end

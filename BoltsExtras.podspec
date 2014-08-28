@@ -1,5 +1,5 @@
 #
-# Be sure to run `pod lib lint BoltsHelpers.podspec' to ensure this is a
+# Be sure to run `pod lib lint BoltsExtras.podspec' to ensure this is a
 # valid spec and remove all comments before submitting the spec.
 #
 # Any lines starting with a # are optional, but encouraged
@@ -9,10 +9,10 @@
 
 Pod::Spec.new do |s|
   s.name             = "BoltsExtras"
-  s.version          = "0.1.0"
-  s.summary          = "A collection of to make IOS Better with Bolts."
+  s.version          = "0.2.0"
+  s.summary          = "A collection of stuff to make IOS Programming Easier with Bolts."
   s.description      = <<-DESC
-                       A collection of to make IOS Better with Bolts.
+                       A collection of stuff to make IOS Programming Easier with Bolts.
                        
                        UIAlertView and UIActionSheet block based implementations that let wrap them into BFTasks
 

@@ -1,5 +1,5 @@
 //
-//  BFTaskItem.h
+//  UIAlertView+Bolts.h
 //  DataRecorder
 //
 //  Created by Michael Gray on 8/25/14.
@@ -24,16 +24,25 @@
 //  THE SOFTWARE.
 
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 #import "Bolts.h"
 
-typedef id(^BFTaskItemActionBlock)();
+@interface UIAlertView (BoltsExtras)
 
-@interface BFTaskItem : NSObject
++(BFTask*)showAlertWithTitle:(NSString *)title
+                message:(NSString *)message
+      cancelButtonTitle:(NSString*)cancelButtonLabel
+     cancelButtonAction:(id (^)())cancelAction
+       otherButtonArray:(NSArray *)otherButtonArray;
 
-@property (strong, nonatomic) NSString *label;
-@property (strong, nonatomic) BFTaskItemActionBlock action;
 
-+(id)itemWithLabel:(NSString *)inLabel andTaskAction:(BFTaskItemActionBlock)action;
++(BFTask*)showAlertWithTitle:(NSString *)title
+                message:(NSString *)message
+      cancelButtonTitle:(NSString*)cancelButtonLabel
+     cancelButtonAction:(id (^)())cancelAction
+          okButtonTitle:(NSString*)okButtonLabel
+         okButtonAction:(id (^)())okAction;
+
+- (BFTask*)showTask;
 
 @end

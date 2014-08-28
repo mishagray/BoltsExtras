@@ -1,8 +1,8 @@
 //
-//  BFTaskItem.h
+//  NSOutputStream+BoltsExtras.h
 //  DataRecorder
 //
-//  Created by Michael Gray on 8/25/14.
+//  Created by Michael Gray on 8/28/14.
 //  Copyright (c) 2014 Michael Gray (@mishagray)
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +23,33 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
 #import <Foundation/Foundation.h>
-#import "Bolts.h"
 
-typedef id(^BFTaskItemActionBlock)();
+@class BFExecutor;
+@class BFTask;
 
-@interface BFTaskItem : NSObject
+@interface NSOutputStream (BoltsExtras)
 
-@property (strong, nonatomic) NSString *label;
-@property (strong, nonatomic) BFTaskItemActionBlock action;
 
-+(id)itemWithLabel:(NSString *)inLabel andTaskAction:(BFTaskItemActionBlock)action;
+- (BFTask*)writeString:(NSString*)string
+         usingEncoding:(NSStringEncoding)encoding
+               options:(NSStringEncodingConversionOptions)options;
+
+- (BFTask*)writeString:(NSString*)string
+         usingEncoding:(NSStringEncoding)encoding
+               options:(NSStringEncodingConversionOptions)options
+          withExecutor:(BFExecutor*)executor;
+
+
+- (BFTask*)writeBuffer:(const uint8_t *)buffer
+             maxLength:(NSUInteger)len;
+
+- (BFTask*)writeBuffer:(const uint8_t *)buffer
+             maxLength:(NSUInteger)len
+          withExecutor:(BFExecutor*)executor;
+
+
+
+
 
 @end

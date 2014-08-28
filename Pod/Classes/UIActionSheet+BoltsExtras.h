@@ -1,5 +1,5 @@
 //
-//  BFTaskItem.h
+//  UIActionSheet+BoltsExtras.h
 //  DataRecorder
 //
 //  Created by Michael Gray on 8/25/14.
@@ -24,16 +24,17 @@
 //  THE SOFTWARE.
 
 
-#import <Foundation/Foundation.h>
-#import "Bolts.h"
+#import <UIKit/UIKit.h>
+#import "BFTaskItem.h"
 
-typedef id(^BFTaskItemActionBlock)();
+@interface UIActionSheet (BoltsExtras) <UIActionSheetDelegate>
 
-@interface BFTaskItem : NSObject
+- (id)initWithTitle:(NSString *)inTitle
+          cancelButtonItem:(BFTaskItem *)inCancelButtonItem
+     destructiveButtonItem:(BFTaskItem *)inDestructiveItem
+          otherButtonArray:(NSArray*)inOtherButtonArray;
 
-@property (strong, nonatomic) NSString *label;
-@property (strong, nonatomic) BFTaskItemActionBlock action;
 
-+(id)itemWithLabel:(NSString *)inLabel andTaskAction:(BFTaskItemActionBlock)action;
+- (BFTask*)showTask;
 
 @end
