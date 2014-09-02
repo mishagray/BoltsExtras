@@ -26,32 +26,21 @@
 
 typedef id(^BoltsExtras_RepeatingTimerBlock)(BOOL * STOP);
 
+@interface BECompletionToken : BFTaskCompletionSource
+
++ (instancetype) token;
+
+@end
 
 @interface BFTask (BoltsExtras)
 
-/*!
- will cancel a task, and cause it's continutions to execute.
- should really only be used with cancelableTaskWithDelay or cancelableTaskWithRepeatingTimeInterval
- it WILL cause any BFTask to cancel, but some tasks don't like to be suddenly cancelled and might throw exceptions.
- returns 'self' so you can do things like.
- 
- BFTask * longRunningTask = [BFTask cancelableTaskWithDelay:10000000];
- [[longRunningTask cancelTask] 
-         continueWithBlock:^id(BFTask *task) {  if (task.completed) return @"I didn't cancel it fast enough" 
-                                                else return @"task was cancelled" }];
- 
-
-:
- */
-- (BFTask*)cancelTask;
-
 
 /*!
- will execute a block BEFORE other tasks completion blocks are called.  Can help implement logic to "clean up" a BFTask when a cancellation is requested via 'cancelTask']
- there is no return value, since the task's completion value will automatically be set to 'cancelled'.
+ Returns a task that can only be cancelled.  (it can't be completed any other way).
+ you have to call cancelationToken to cancel this task.
+ @param token cancellationToken required to cancel this task.
  */
-- (void)setOnCancelBlock:(void (^)())onCancelBlock;
-
++ (instancetype)taskWithCompletionToken:(BECompletionToken*)token;
 
 
 /*!
@@ -60,7 +49,7 @@ typedef id(^BoltsExtras_RepeatingTimerBlock)(BOOL * STOP);
  @param millis The approximate number of milliseconds to wait before the
  task will be finished (with result == nil).
  */
-+ (instancetype)cancelableTaskWithDelay:(int)millis;
++ (instancetype)taskWithDelay:(int)millis completionToken:(BECompletionToken*)token;
 
 
 /*!
@@ -76,9 +65,9 @@ typedef id(^BoltsExtras_RepeatingTimerBlock)(BOOL * STOP);
  @param onCancelBlock executes if the [task cancelTask] method is called.  It may be NULL
  
  */
-+ (instancetype)cancelableTaskWithRepeatingTimeInterval:(NSTimeInterval)ti
-                                     withRepeatingBlock:(id (^)(BOOL * STOP))repeatingTimerBlock
-                                                onCancelBlock:(void (^)())onCancelBlock;
++ (instancetype)taskWithRepeatingTimeInterval:(NSTimeInterval)ti
+                           withRepeatingBlock:(id (^)(BOOL * STOP))repeatingTimerBlock
+                            completionToken:(BECompletionToken*)completionToken;
 
 
 /*!
@@ -95,12 +84,14 @@ typedef id(^BoltsExtras_RepeatingTimerBlock)(BOOL * STOP);
  @param executor will execute all blocks using the executor supplied.
  
  */
-+ (instancetype)cancelableTaskWithRepeatingTimeInterval:(NSTimeInterval)ti
++ (instancetype)taskWithRepeatingTimeInterval:(NSTimeInterval)ti
                                      withRepeatingBlock:(id (^)(BOOL * STOP))repeatingTimerBlock
-                                          onCancelBlock:(void (^)())onCancelBlock
+                                      completionToken:(BECompletionToken*)completionToken
                                            withExecutor:(BFExecutor *)executor;
 
 @end
+
+
 
 
 

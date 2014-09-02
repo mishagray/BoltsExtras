@@ -26,6 +26,7 @@
 #import <UIKit/UIKit.h>
 #import "Bolts.h"
 
+@class BECompletionToken;
 @interface UIAlertView (BoltsExtras)
 
 +(BFTask*)showAlertWithTitle:(NSString *)title
@@ -34,6 +35,14 @@
      cancelButtonAction:(id (^)())cancelAction
        otherButtonArray:(NSArray *)otherButtonArray;
 
++(BFTask*)showAlertWithTitle:(NSString *)title
+                     message:(NSString *)message
+           cancelButtonTitle:(NSString*)cancelButtonLabel
+          cancelButtonAction:(id (^)())cancelAction
+            otherButtonArray:(NSArray *)otherButtonArray
+             completionToken:(BECompletionToken*)token;
+
+
 
 +(BFTask*)showAlertWithTitle:(NSString *)title
                 message:(NSString *)message
@@ -41,6 +50,14 @@
      cancelButtonAction:(id (^)())cancelAction
           okButtonTitle:(NSString*)okButtonLabel
          okButtonAction:(id (^)())okAction;
+
++(BFTask*)showAlertWithTitle:(NSString *)title
+                     message:(NSString *)message
+           cancelButtonTitle:(NSString*)cancelButtonLabel
+          cancelButtonAction:(id (^)())cancelAction
+               okButtonTitle:(NSString*)okButtonLabel
+              okButtonAction:(id (^)())okAction
+             completionToken:(BECompletionToken*)token;
 
 - (BFTask*)showTask;
 

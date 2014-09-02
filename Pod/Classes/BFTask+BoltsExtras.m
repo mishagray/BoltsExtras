@@ -26,7 +26,7 @@
 #import "BFTask+BoltsExtras.h"
 #import <objc/runtime.h>
 
-typedef void(^BoltsExtras_CancelationBlock)();
+typedef id(^BoltsExtras_CancellationBlock)();
 typedef id(^BoltsExtras_RepeatingTimerBlock)(BOOL * STOP);
 
 
@@ -35,21 +35,21 @@ typedef id(^BoltsExtras_RepeatingTimerBlock)(BOOL * STOP);
 @end
 
 
-@interface BoltsExtrasBFTaskCompletionSource : BFTaskCompletionSource;
-
-@end
-
-@interface BoltsExtrasBFTaskCompletionSource ()
+@interface BECompletionToken ()
 
 @property (nonatomic, strong) NSTimer *timer;
 @property (nonatomic, copy) BoltsExtras_RepeatingTimerBlock timerBlock;
 @end
 
-@implementation BoltsExtrasBFTaskCompletionSource
+@implementation BECompletionToken
 
 
-+ (BFTaskCompletionSource *)taskCompletionSource {
-    return [[BoltsExtrasBFTaskCompletionSource alloc] init];
++ (instancetype)token {
+    return [[BECompletionToken alloc] init];
+}
+
++ (BECompletionToken *)taskCompletionSource {
+    return [[BECompletionToken alloc] init];
 }
 
 -(void)_cleanupTimer
@@ -58,7 +58,6 @@ typedef id(^BoltsExtras_RepeatingTimerBlock)(BOOL * STOP);
         [self.timer invalidate];
     }
     self.timer = nil;
-    self.timerBlock = nil;
 }
 
 -(void)_executeTimerBlock:(NSTimer *)inTimer{
@@ -66,10 +65,21 @@ typedef id(^BoltsExtras_RepeatingTimerBlock)(BOOL * STOP);
         BOOL STOP = NO;
         id ret = self.timerBlock(&STOP);
         if (STOP) {
-            [self _cleanupTimer];
             [self trySetResult:ret];
+            [self _cleanupTimer];
         }
     }
+}
+
+- (BOOL)trySetCancelled
+{
+    [self _cleanupTimer];
+    return [self.task trySetCancelled];
+}
+- (void)cancel
+{
+    [self _cleanupTimer];
+    [self.task trySetCancelled];
 }
 
 - (void)dealloc
@@ -77,79 +87,51 @@ typedef id(^BoltsExtras_RepeatingTimerBlock)(BOOL * STOP);
     [self _cleanupTimer];
 }
 
+
+
 @end
+
+
 
 @implementation BFTask (BoltsExtras)
 
++ (instancetype)taskWithCompletionToken:(BECompletionToken*)token
+{
+    return token.task;
+}
 
-+ (instancetype)cancelableTaskWithDelay:(int)millis {
-    BFTaskCompletionSource *tcs = [BFTaskCompletionSource taskCompletionSource];
+
++ (instancetype)taskWithDelay:(int)millis completionToken:(BECompletionToken*)token
+{
     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, millis * NSEC_PER_MSEC);
     dispatch_after(popTime, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-        [tcs trySetResult:nil];
+        [token trySetResult:nil];
     });
-    return tcs.task;
+    return token.task;
+    
 }
 
-
-+ (instancetype)cancelableTaskWithRepeatingTimeInterval:(NSTimeInterval)ti
-                                     withRepeatingBlock:(id (^)(BOOL * STOP))repeatingTimerBlock
-                                          onCancelBlock:(void (^)())onCancelBlock
++ (instancetype)taskWithRepeatingTimeInterval:(NSTimeInterval)ti
+                           withRepeatingBlock:(id (^)(BOOL * STOP))repeatingTimerBlock
+                            completionToken:(BECompletionToken*)completionToken
 {
-    return [self cancelableTaskWithRepeatingTimeInterval:ti
-                                      withRepeatingBlock:repeatingTimerBlock
-                                           onCancelBlock:onCancelBlock
-                                            withExecutor:[BFExecutor immediateExecutor]];
+    return [self taskWithRepeatingTimeInterval:ti withRepeatingBlock:repeatingTimerBlock completionToken:completionToken withExecutor:[BFExecutor immediateExecutor]];
 }
 
-+ (instancetype)cancelableTaskWithRepeatingTimeInterval:(NSTimeInterval)ti
++ (instancetype)taskWithRepeatingTimeInterval:(NSTimeInterval)ti
                                            withRepeatingBlock:(id (^)(BOOL * STOP))repeatingTimerBlock
-                                                onCancelBlock:(void (^)())onCancelBlock
+                                            completionToken:(BECompletionToken*)tcs
                                             withExecutor:(BFExecutor *)executor
 {
-    BoltsExtrasBFTaskCompletionSource *tcs = [BoltsExtrasBFTaskCompletionSource taskCompletionSource];
- 
     [executor execute:^{
-
-    
         tcs.timerBlock = [repeatingTimerBlock copy];
         tcs.timer = [NSTimer scheduledTimerWithTimeInterval:ti
-                                                  target:tcs
-                                                selector:@selector(_executeTimerBlock:)
-                                                userInfo:nil repeats:YES];
-        __weak BoltsExtrasBFTaskCompletionSource * weaktcs = tcs;
-       [tcs.task setOnCancelBlock:^{
-            [weaktcs _cleanupTimer];
-            if (onCancelBlock != NULL) {
-                [executor execute:onCancelBlock];
-            }
-        }];
+                                                     target:tcs
+                                                   selector:@selector(_executeTimerBlock:)
+                                                   userInfo:nil repeats:YES];
+
     }];
     return tcs.task;
-}
-
-static NSString *CANCEL_BLOCK_KEY = @"com.pushleaf.BoltsExtras.BFTask.CANCEL_BLOCK";
-
-- (void)setOnCancelBlock:(void (^)())onCancelBlock
-{
-    objc_setAssociatedObject(self, (__bridge const void *)CANCEL_BLOCK_KEY, [onCancelBlock copy],
-                             OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-
-}
-
-- (BFTask*)cancelTask
-{
-    BoltsExtras_CancelationBlock cancelBlock = objc_getAssociatedObject(self, (__bridge const void *)CANCEL_BLOCK_KEY);
-    ;
-    // execute the block BEFORE you execute 'super', since that will cause any continuations to occur.
-    // we want the cancel block to execute BEFORE any tasks that get triggered by this task completing.
-    if ((cancelBlock != NULL) && !self.isCompleted) {
-        cancelBlock();
-        objc_setAssociatedObject(self, (__bridge const void *)CANCEL_BLOCK_KEY, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    }
-    [self trySetCancelled];
-    
-    return self;
 }
 
 - (id)debugQuickLookObject

@@ -33,10 +33,13 @@ static NSString *RI_TASK_COMPLETION_KEY = @"com.pushleaf.BoltsExtras.UIAlertView
 
 @implementation UIAlertView (BoltsExtras)
 
+
 - (id)initWithTitle:(NSString *)inTitle
              message:(NSString *)inMessage
     cancelButtonItem:(BFTaskItem *)cancelButtonItem
-    otherButtonArray:(NSArray *)inOtherButtonArray {
+    otherButtonArray:(NSArray *)inOtherButtonArray
+    completionToken:(BECompletionToken*)token {
+
     if ((self = [self initWithTitle:inTitle
                             message:inMessage
                            delegate:self
@@ -57,21 +60,23 @@ static NSString *RI_TASK_COMPLETION_KEY = @"com.pushleaf.BoltsExtras.UIAlertView
         objc_setAssociatedObject(self, (__bridge const void *)RI_BUTTON_KEY, buttonsArray,
                                  OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
-        BFTaskCompletionSource *tcs = [BFTaskCompletionSource taskCompletionSource];
         __weak UIAlertView * weakSelf = self;
-        [tcs.task setOnCancelBlock:^{
-            [weakSelf dismissWithClickedButtonIndex:weakSelf.cancelButtonIndex animated:YES];
+        
+        
+        [token.task continueWithBlock:^id(BFTask *task) {
+            if (task.cancelled) {
+                [weakSelf dismissWithClickedButtonIndex:weakSelf.cancelButtonIndex animated:YES];
+            }
+            return task.result;
         }];
-        
-        
-        objc_setAssociatedObject(self, (__bridge const void *)RI_TASK_COMPLETION_KEY, tcs,
+        objc_setAssociatedObject(self, (__bridge const void *)RI_TASK_COMPLETION_KEY, token,
                                  OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
     return self;
 }
 
 - (BFTask *)showTask {
-    BFTaskCompletionSource *tcs =
+    BECompletionToken *tcs =
         objc_getAssociatedObject(self, (__bridge const void *)RI_TASK_COMPLETION_KEY);
     ;
 
@@ -79,7 +84,7 @@ static NSString *RI_TASK_COMPLETION_KEY = @"com.pushleaf.BoltsExtras.UIAlertView
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    BFTaskCompletionSource *tcs =
+    BECompletionToken *tcs =
         objc_getAssociatedObject(self, (__bridge const void *)RI_TASK_COMPLETION_KEY);
     ;
 
@@ -101,18 +106,29 @@ static NSString *RI_TASK_COMPLETION_KEY = @"com.pushleaf.BoltsExtras.UIAlertView
                              OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
++ (BFTask *)showAlertWithTitle:(NSString *)title
+                       message:(NSString *)message
+             cancelButtonTitle:(NSString*)cancelButtonLabel
+            cancelButtonAction:(id (^)())cancelAction
+              otherButtonArray:(NSArray *)otherButtonArray
+{
+    return [self showAlertWithTitle:title message:message cancelButtonTitle:cancelButtonLabel cancelButtonAction:cancelAction otherButtonArray:otherButtonArray completionToken:[BECompletionToken token]];
+}
+
 
 + (BFTask *)showAlertWithTitle:(NSString *)title
     message:(NSString *)message
     cancelButtonTitle:(NSString*)cancelButtonLabel
     cancelButtonAction:(id (^)())cancelAction
-              otherButtonArray:(NSArray *)otherButtonArray; {
-
+     otherButtonArray:(NSArray *)otherButtonArray
+        completionToken:(BECompletionToken *)token
+{
     UIAlertView *alertView = [[UIAlertView alloc]
                               initWithTitle:title
                               message:message
                               cancelButtonItem:[BFTaskItem itemWithLabel:cancelButtonLabel andTaskAction:cancelAction]
-                              otherButtonArray:otherButtonArray];
+                              otherButtonArray:otherButtonArray completionToken:token];
+                              
     [alertView show];
     return alertView.showTask;
 }
@@ -126,6 +142,16 @@ static NSString *RI_TASK_COMPLETION_KEY = @"com.pushleaf.BoltsExtras.UIAlertView
                 okButtonAction:(id (^)())okAction {
     
     return [UIAlertView showAlertWithTitle:title message:message cancelButtonTitle:cancelButtonLabel cancelButtonAction:cancelAction otherButtonArray:@[ [BFTaskItem itemWithLabel:okButtonLabel andTaskAction:okAction] ]];
+}
+
++ (BFTask *)showAlertWithTitle:(NSString *)title
+                       message:(NSString *)message
+             cancelButtonTitle:(NSString *)cancelButtonLabel
+            cancelButtonAction:(id (^)())cancelAction
+                 okButtonTitle:(NSString *)okButtonLabel
+                okButtonAction:(id (^)())okAction
+                completionToken:(BECompletionToken *)token {
+        return [UIAlertView showAlertWithTitle:title message:message cancelButtonTitle:cancelButtonLabel cancelButtonAction:cancelAction otherButtonArray:@[ [BFTaskItem itemWithLabel:okButtonLabel andTaskAction:okAction] ] completionToken:token];
 }
 
 
