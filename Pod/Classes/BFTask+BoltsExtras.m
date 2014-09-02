@@ -31,7 +31,7 @@ typedef id(^BoltsExtras_RepeatingTimerBlock)(BOOL * STOP);
 
 
 @interface BFTask (BFTaskCompletionSource)
-- (void)cancel;
+- (BOOL)trySetCancelled;
 @end
 
 
@@ -112,6 +112,7 @@ typedef id(^BoltsExtras_RepeatingTimerBlock)(BOOL * STOP);
     [executor execute:^{
 
     
+        tcs.timerBlock = [repeatingTimerBlock copy];
         tcs.timer = [NSTimer scheduledTimerWithTimeInterval:ti
                                                   target:tcs
                                                 selector:@selector(_executeTimerBlock:)
@@ -146,7 +147,7 @@ static NSString *CANCEL_BLOCK_KEY = @"com.pushleaf.BoltsExtras.BFTask.CANCEL_BLO
         cancelBlock();
         objc_setAssociatedObject(self, (__bridge const void *)CANCEL_BLOCK_KEY, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
-    [self cancel];
+    [self trySetCancelled];
     
     return self;
 }
