@@ -1,6 +1,5 @@
 //
 //  UIActionSheet+Bolts.m
-//  DataRecorder
 //
 //  Created by Michael Gray on 8/25/14.
 //  Copyright (c) 2014 Michael Gray (@mishagray)
@@ -28,8 +27,8 @@
 #include "BFTaskItem.h"
 #import <objc/runtime.h>
 
-static NSString *RI_BUTTON_KEY = @"com.flybyActionItem.UIActionSheet.BUTTONS";
-static NSString *RI_TASK_COMPLETION_KEY = @"com.flybyActionItem.UIActionSheet.TCS";
+static NSString *RI_BUTTON_KEY = @"com.pushleaf.BoltsExtras.UIActionSheet.BUTTONS";
+static NSString *RI_TASK_COMPLETION_KEY = @"com.pushleaf.BoltsExtras.UIActionSheet.TCS";
 
 
 

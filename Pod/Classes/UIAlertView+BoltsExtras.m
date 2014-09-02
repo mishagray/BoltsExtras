@@ -24,12 +24,12 @@
 //  THE SOFTWARE.
 
 
-#import "UIAlertView+BoltsExtras.h"
+#import "BoltsExtras.h"
 #import <objc/runtime.h>
 #import "BFTaskItem.h"
 
-static NSString *RI_BUTTON_KEY = @"com.flybyActionItem.UIAlertView.BUTTONS";
-static NSString *RI_TASK_COMPLETION_KEY = @"com.flybyActionItem.UIAlertView.TCS";
+static NSString *RI_BUTTON_KEY = @"com.pushleaf.BoltsExtras.UIAlertView.BUTTONS";
+static NSString *RI_TASK_COMPLETION_KEY = @"com.pushleaf.BoltsExtras.UIAlertView.TCS";
 
 @implementation UIAlertView (BoltsExtras)
 
@@ -58,6 +58,12 @@ static NSString *RI_TASK_COMPLETION_KEY = @"com.flybyActionItem.UIAlertView.TCS"
                                  OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
         BFTaskCompletionSource *tcs = [BFTaskCompletionSource taskCompletionSource];
+        __weak UIAlertView * weakSelf = self;
+        [tcs.task setOnCancelBlock:^{
+            [weakSelf dismissWithClickedButtonIndex:weakSelf.cancelButtonIndex animated:YES];
+        }];
+        
+        
         objc_setAssociatedObject(self, (__bridge const void *)RI_TASK_COMPLETION_KEY, tcs,
                                  OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }

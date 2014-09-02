@@ -1,6 +1,6 @@
 //
-//  BFTask+DebugQuickLook.m
-//  DataRecorder
+//  BoltsExtras.h
+//  Pods
 //
 //  Created by Michael Gray on 8/25/14.
 //  Copyright (c) 2014 Michael Gray (@mishagray)
@@ -23,32 +23,10 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
+#import "BFTask+BoltsExtras.h"
+#import "NSFileManager+BoltsExtras.h"
+#import "NSOutputStream+BoltsExtras.h"
+#import "UIActionSheet+BoltsExtras.h"
+#import "UIAlertView+BoltsExtras.h"
 
-#import "BFTask+DebugQuickLook.h"
 
-@implementation BFTask (DebugQuickLook)
-
-- (id)debugQuickLookObject
-{
-    if (self.isCompleted) {
-        if (self.isCancelled) {
-            return [NSString stringWithFormat:@"%@ CANCELED",self];
-        }
-        else if (self.error != nil) {
-            return [NSString stringWithFormat:@"%@ COMPLETED WITH ERROR:%@",self,[self.error localizedDescription]];
-        }
-        else if (self.exception != nil) {
-            return [NSString stringWithFormat:@"%@ COMPLETED WITH EXCEPTION:%@",self,[self.exception description]];
-        }
-        else if (self.result != nil) {
-            return [NSString stringWithFormat:@"%@ COMPLETED WITH RESULT:[%@]",self,self.result];
-        }
-        else {
-            return [NSString stringWithFormat:@"%@ COMPLETED",self];
-        }
-    }
-    else {
-        return [NSString stringWithFormat:@"%@ NOT COMPLETED YET",self];
-    }
-}
-@end
