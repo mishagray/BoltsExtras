@@ -49,7 +49,8 @@
           withExecutor:(BFExecutor*)executor;
 
 
-
+- (BFTask*)write:(NSData*)data;
+- (BFTask*)write:(NSData*)data withExecutor:(BFExecutor*)executor;
 
 
 @end

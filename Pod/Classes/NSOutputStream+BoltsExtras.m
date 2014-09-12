@@ -102,4 +102,27 @@
     return tcs.task;
 }
 
+- (BFTask*)write:(NSData*)data
+{
+    return [self write:data withExecutor:[BFExecutor defaultExecutor]];
+}
+
+- (BFTask*)write:(NSData*)data
+          withExecutor:(BFExecutor*)executor {
+    
+    BFTaskCompletionSource *tcs = [BFTaskCompletionSource taskCompletionSource];
+    [executor execute:^{
+        
+        NSInteger byesWritten = [self write:data.bytes maxLength:data.length];
+        if (self.streamError != nil) {
+            [tcs trySetError:self.streamError];
+        }
+        else {
+            [tcs trySetResult:@(byesWritten)];
+        }
+    }];
+    
+    return tcs.task;
+}
+
 @end

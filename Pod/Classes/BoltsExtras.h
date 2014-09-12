@@ -28,5 +28,6 @@
 #import "NSOutputStream+BoltsExtras.h"
 #import "UIActionSheet+BoltsExtras.h"
 #import "UIAlertView+BoltsExtras.h"
+#import "NSJSONSerialization+BoltsExtra.h"
 
 
