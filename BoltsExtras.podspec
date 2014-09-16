@@ -9,7 +9,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "BoltsExtras"
-  s.version          = "0.4.1"
+  s.version          = "0.4.2"
   s.summary          = "A collection of stuff to make IOS Programming Easier with Bolts."
   s.description      = <<-DESC
                        A collection of stuff to make IOS Programming Easier with Bolts.
