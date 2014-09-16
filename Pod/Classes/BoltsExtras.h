@@ -29,5 +29,6 @@
 #import "UIActionSheet+BoltsExtras.h"
 #import "UIAlertView+BoltsExtras.h"
 #import "NSJSONSerialization+BoltsExtra.h"
+#import "NSURL+BoltsExtras.h"
 
 

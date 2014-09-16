@@ -58,6 +58,12 @@
                        withExecutor:(BFExecutor*)executor;
 
 
++ (BFTask*)recursiveSizeForDirectoryAt:(NSURL*)directoryUrl;
++ (BFTask*)recursiveSizeForDirectoryAt:(NSURL*)directoryUrl withExecutor:(BFExecutor*)executor;
+- (BFTask*)recursiveSizeForDirectoryAt:(NSURL*)directoryUrl;
+- (BFTask*)recursiveSizeForDirectoryAt:(NSURL*)directoryUrl withExecutor:(BFExecutor*)executor;
+
+
 
 
 @end

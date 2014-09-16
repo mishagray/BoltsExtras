@@ -42,6 +42,15 @@ static BFExecutor *s_executorForFileManager = nil;
     });
     return s_executorForFileManager;
 }
++ (NSFileManager*)defaultManagerOrCreate
+{
+    NSFileManager * defaultManager = [NSFileManager defaultManager];
+    if (defaultManager == nil) {
+        defaultManager = [[NSFileManager alloc] init];
+    }
+    return defaultManager;
+}
+
 
 + (void) setDefaultExecutor:(BFExecutor*)executor
 {
@@ -100,5 +109,54 @@ static BFExecutor *s_executorForFileManager = nil;
     return tcs.task;
    
 }
++ (BFTask*)recursiveSizeForDirectoryAt:(NSURL*)directoryUrl
+{
+    return [[self defaultManagerOrCreate] recursiveSizeForDirectoryAt:directoryUrl withExecutor:[self defaultExecutor]];
+}
++ (BFTask*)recursiveSizeForDirectoryAt:(NSURL*)directoryUrl withExecutor:(BFExecutor*)executor
+{
+    return [[self defaultManagerOrCreate] recursiveSizeForDirectoryAt:directoryUrl withExecutor:executor];
+}
+
+- (BFTask*)recursiveSizeForDirectoryAt:(NSURL*)directoryUrl
+{
+    return [self recursiveSizeForDirectoryAt:directoryUrl withExecutor:[NSFileManager defaultExecutor]];
+}
+
+- (BFTask*)recursiveSizeForDirectoryAt:(NSURL*)directoryUrl withExecutor:(BFExecutor*)executor
+{
+    BFTaskCompletionSource *tcs = [BFTaskCompletionSource taskCompletionSource];
+    
+    [executor execute:^{
+        NSDirectoryEnumerator *de = [self enumeratorAtURL:directoryUrl includingPropertiesForKeys:@[NSURLFileSizeKey] options:0 errorHandler:^BOOL(NSURL *url, NSError *err) {
+            [tcs trySetError:err];
+            return NO;
+        }];
+        
+        NSURL * fileUrl;
+        NSInteger directorySize = 0;
+        
+        while ((fileUrl = [de nextObject]) && !tcs.task.isCompleted) {
+            // make the filename |f| a fully qualifed filename
+            
+            NSNumber * fileSize = nil;
+            NSError * error = nil;
+            if ([fileUrl getResourceValue:&fileSize forKey:NSURLFileSizeKey error:&error]) {
+                directorySize += [fileSize integerValue];
+            }
+            else {
+                [tcs trySetError:error];
+            }
+        }
+        
+        [tcs trySetResult:@(directorySize)];
+    }];
+    
+    return tcs.task;
+
+}
+
+
+
 
 @end
