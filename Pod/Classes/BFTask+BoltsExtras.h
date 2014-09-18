@@ -97,6 +97,15 @@ typedef id(^BoltsExtras_RepeatingTimerBlock)(BOOL * STOP);
 @end
 
 
+@interface BFTaskCompletionSource (BoltsExtras)
+
+- (void)setCompletionValuesWithTask:(BFTask*)task;
+- (BOOL)trySetCompletionValuesWithTask:(BFTask*)task;
+
+
+@end
+
+
 
 
 

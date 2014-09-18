@@ -79,6 +79,9 @@
 - (BFTask*)createDirectoryAtURL:(NSURL *)url withIntermediateDirectories:(BOOL)createIntermediates attributes:(NSDictionary *)attributes withExecutor:(BFExecutor *)executor;
 
 
++ (BFTask *)attributesOfItemAtPath:(NSString *)path;
+- (BFTask *)attributesOfItemAtPath:(NSString *)path;
+- (BFTask *)attributesOfItemAtPath:(NSString *)path withExecutor:(BFExecutor *)executor;
 
 
 

@@ -228,6 +228,40 @@ static BFExecutor *s_executorForFileManager = nil;
 
 }
 
++ (BFTask *)attributesOfItemAtPath:(NSString *)path
+{
+    return [[self defaultManagerOrCreate] attributesOfItemAtPath:path withExecutor:[NSFileManager defaultExecutor]];
+}
+
+
+- (BFTask *)attributesOfItemAtPath:(NSString *)path
+{
+    return [self attributesOfItemAtPath:path withExecutor:[NSFileManager defaultExecutor]];
+}
+
+
+- (BFTask *)attributesOfItemAtPath:(NSString *)path withExecutor:(BFExecutor *)executor
+{
+    BFTaskCompletionSource *tcs = [BFTaskCompletionSource taskCompletionSource];
+    
+    [executor execute:^{
+        
+        NSError * error = nil;
+        
+        NSDictionary * attributes = [self attributesOfItemAtPath:path error:&error];
+        
+        if (error) {
+            [tcs trySetError:error];
+        }
+        else {
+            [tcs trySetResult:attributes];
+        }
+    }];
+    
+    return tcs.task;
+    
+}
+
 
 
 
