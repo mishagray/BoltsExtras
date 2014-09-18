@@ -134,6 +134,17 @@ typedef id(^BoltsExtras_RepeatingTimerBlock)(BOOL * STOP);
     return tcs.task;
 }
 
+
+- (BOOL)isSuccessful
+{
+    if (self.isCompleted) {
+        if ((self.error == nil) && (self.exception == nil) && (!self.cancelled)) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 - (id)debugQuickLookObject
 {
     if (self.isCompleted) {

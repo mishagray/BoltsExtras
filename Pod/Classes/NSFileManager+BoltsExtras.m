@@ -69,6 +69,78 @@ static BFExecutor *s_executorForFileManager = nil;
 }
 
 
++ (BFTask*)checkIfFileOrDirectoryExistsAtPath:(NSString *)path
+{
+    return [[NSFileManager defaultManagerOrCreate] checkIfFileOrDirectoryExistsAtPath:path];
+}
+
+- (BFTask*)checkIfFileOrDirectoryExistsAtPath:(NSString *)path
+{
+    BFTaskCompletionSource *tcs = [BFTaskCompletionSource taskCompletionSource];
+    [[NSFileManager defaultExecutor] execute:^{
+        
+        BOOL isDirectory = NO;
+        BOOL exists = [self fileExistsAtPath:path isDirectory:&isDirectory];
+        
+        if (isDirectory) {
+            [tcs setResult:@(2)];
+        }
+        else if (exists) {
+            [tcs setResult:@(1)];
+        }
+        else {
+            [tcs setResult:nil];
+        }
+    }];
+    
+    return tcs.task;
+}
+
++ (BFTask*)createDirectoryAtPath:(NSString *)path withIntermediateDirectories:(BOOL)createIntermediates attributes:(NSDictionary *)attributes
+{
+    NSURL * url = [NSURL fileURLWithPath:path isDirectory:YES];
+    return [[NSFileManager defaultManagerOrCreate] createDirectoryAtURL:url withIntermediateDirectories:createIntermediates attributes:attributes withExecutor:[NSFileManager defaultExecutor]];
+    
+}
+- (BFTask*)createDirectoryAtPath:(NSString *)path withIntermediateDirectories:(BOOL)createIntermediates attributes:(NSDictionary *)attributes
+{
+    NSURL * url = [NSURL fileURLWithPath:path isDirectory:YES];
+    return [self createDirectoryAtURL:url withIntermediateDirectories:createIntermediates attributes:attributes withExecutor:[NSFileManager defaultExecutor]];
+    
+}
+- (BFTask*)createDirectoryAtPath:(NSString *)path withIntermediateDirectories:(BOOL)createIntermediates attributes:(NSDictionary *)attributes withExecutor:(BFExecutor *)executor
+{
+    NSURL * url = [NSURL fileURLWithPath:path isDirectory:YES];
+    return [self createDirectoryAtURL:url withIntermediateDirectories:createIntermediates attributes:attributes withExecutor:executor];
+}
+
+
+
++ (BFTask*)createDirectoryAtURL:(NSURL *)url withIntermediateDirectories:(BOOL)createIntermediates attributes:(NSDictionary *)attributes
+{
+    return [[NSFileManager defaultManagerOrCreate] createDirectoryAtURL:url withIntermediateDirectories:createIntermediates attributes:attributes withExecutor:[NSFileManager defaultExecutor]];
+}
+- (BFTask*)createDirectoryAtURL:(NSURL *)url withIntermediateDirectories:(BOOL)createIntermediates attributes:(NSDictionary *)attributes;
+{
+    return [self createDirectoryAtURL:url withIntermediateDirectories:createIntermediates attributes:attributes withExecutor:[NSFileManager defaultExecutor]];
+    
+}
+
+- (BFTask*)createDirectoryAtURL:(NSURL *)url withIntermediateDirectories:(BOOL)createIntermediates attributes:(NSDictionary *)attributes withExecutor:(BFExecutor *)executor
+{
+    BFTaskCompletionSource *tcs = [BFTaskCompletionSource taskCompletionSource];
+    [executor execute:^{
+        NSError * error = nil;
+        
+        if (![self createDirectoryAtURL:url withIntermediateDirectories:createIntermediates attributes:attributes error:&error]) {
+            [tcs trySetError:error];
+        }
+        else {
+            [tcs trySetResult:url];
+        }
+    }];
+    return tcs.task;
+}
 
 
 - (BFTask*)removeItemAtURL:(NSURL *)path withExecutor:(BFExecutor *)executor

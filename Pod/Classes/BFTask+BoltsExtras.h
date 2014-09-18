@@ -35,6 +35,7 @@ typedef id(^BoltsExtras_RepeatingTimerBlock)(BOOL * STOP);
 @interface BFTask (BoltsExtras)
 
 
+
 /*!
  Returns a task that can only be cancelled.  (it can't be completed any other way).
  you have to call cancelationToken to cancel this task.
@@ -88,6 +89,10 @@ typedef id(^BoltsExtras_RepeatingTimerBlock)(BOOL * STOP);
                                      withRepeatingBlock:(id (^)(BOOL * STOP))repeatingTimerBlock
                                       completionToken:(BECompletionToken*)completionToken
                                            withExecutor:(BFExecutor *)executor;
+
+
+- (BOOL)isSuccessful;
+
 
 @end
 

@@ -30,10 +30,11 @@
 
 @interface NSFileManager (BoltsExtras)
 
-
+// Lots of light weigth NSFileManager tasks that will keep NSFileManager operations out of your main queue!
 //
 // by default NSFileManager will dispatch operations to DISPATCH_QUEUE_PRIORITY_DEFAULT
-// Feel free to change!
+// Feel free to change via [NSFIleManager setDefaultExecutor:].
+//
 
 + (BFExecutor*) defaultExecutor;
 + (void) setDefaultExecutor:(BFExecutor*)executor;
@@ -46,6 +47,11 @@
          includingPropertiesForKeys:(NSArray *)keys
                             options:(NSDirectoryEnumerationOptions)mask;
 
+
+// returns 1 if file exists at path,  2 if directoy exists at path. nil if no file exists;
++ (BFTask*)checkIfFileOrDirectoryExistsAtPath:(NSString *)path;
+- (BFTask*)checkIfFileOrDirectoryExistsAtPath:(NSString *)path;
+                                  
 
 // OR Overide the Executor if you want!
 
@@ -62,6 +68,16 @@
 + (BFTask*)recursiveSizeForDirectoryAt:(NSURL*)directoryUrl withExecutor:(BFExecutor*)executor;
 - (BFTask*)recursiveSizeForDirectoryAt:(NSURL*)directoryUrl;
 - (BFTask*)recursiveSizeForDirectoryAt:(NSURL*)directoryUrl withExecutor:(BFExecutor*)executor;
+
+
++ (BFTask*)createDirectoryAtPath:(NSString *)path withIntermediateDirectories:(BOOL)createIntermediates attributes:(NSDictionary *)attributes;
+- (BFTask*)createDirectoryAtPath:(NSString *)path withIntermediateDirectories:(BOOL)createIntermediates attributes:(NSDictionary *)attributes;
+- (BFTask*)createDirectoryAtPath:(NSString *)path withIntermediateDirectories:(BOOL)createIntermediates attributes:(NSDictionary *)attributes withExecutor:(BFExecutor *)executor;
+
++ (BFTask*)createDirectoryAtURL:(NSURL *)url withIntermediateDirectories:(BOOL)createIntermediates attributes:(NSDictionary *)attributes;
+- (BFTask*)createDirectoryAtURL:(NSURL *)url withIntermediateDirectories:(BOOL)createIntermediates attributes:(NSDictionary *)attributes;
+- (BFTask*)createDirectoryAtURL:(NSURL *)url withIntermediateDirectories:(BOOL)createIntermediates attributes:(NSDictionary *)attributes withExecutor:(BFExecutor *)executor;
+
 
 
 
