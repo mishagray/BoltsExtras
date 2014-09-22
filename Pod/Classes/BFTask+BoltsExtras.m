@@ -173,11 +173,16 @@ typedef id(^BoltsExtras_RepeatingTimerBlock)(BOOL * STOP);
 
 @implementation BFTaskCompletionSource (BoltsExtras)
 
-- (BOOL)trySetCompletionValuesWithTask:(BFTask *)task
+- (BOOL)_trySetCompletionValuesWithTask:(BFTask *)task throwExecptOnAsyncFail:(BOOL)throwExecptOnAsyncFail
 {
     if (!task.isCompleted) {
         [task continueWithBlock:^id(BFTask *finshedTask) {
-            [self trySetCompletionValuesWithTask:finshedTask];
+            if (throwExecptOnAsyncFail) {
+                [self setCompletionValuesWithTask:finshedTask];
+            }
+            else {
+                [self _trySetCompletionValuesWithTask:finshedTask throwExecptOnAsyncFail:NO];
+            }
             return finshedTask;
         }];
         return YES;
@@ -196,9 +201,15 @@ typedef id(^BoltsExtras_RepeatingTimerBlock)(BOOL * STOP);
     }
 }
 
+
+- (BOOL)trySetCompletionValuesWithTask:(BFTask *)task
+{
+    return [self _trySetCompletionValuesWithTask:task throwExecptOnAsyncFail:NO];
+}
+
 - (void)setCompletionValuesWithTask:(BFTask *)task
 {
-    if (![self trySetCompletionValuesWithTask:task]) {
+    if (![self _trySetCompletionValuesWithTask:task throwExecptOnAsyncFail:YES]) {
         [NSException raise:NSInternalInconsistencyException
                     format:@"Cannot set the exception on a completed task."];
     }
