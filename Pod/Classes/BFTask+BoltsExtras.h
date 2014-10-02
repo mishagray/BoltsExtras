@@ -24,6 +24,9 @@
 
 #import "Bolts.h"
 
+typedef id(^SimpleBFContinuationBlock)();
+
+
 typedef id(^BoltsExtras_RepeatingTimerBlock)(BOOL * STOP);
 
 @interface BECompletionToken : BFTaskCompletionSource
@@ -92,6 +95,35 @@ typedef id(^BoltsExtras_RepeatingTimerBlock)(BOOL * STOP);
 
 
 - (BOOL)isSuccessful;
+
+
+/*!
+ simple notatation when you don't need to look at the results of the task.
+ Can make the code look smaller (especially when using swift
+ */
+- (instancetype)continueWith:(SimpleBFContinuationBlock)block;
+
+/*!
+ simple notatation when you don't need to look at the results of the task.
+ Can make the code look smaller (especially when using swift
+ */
+- (instancetype)continueWithSuccess:(SimpleBFContinuationBlock)block;
+
+/*!
+ simple notatation when you don't need to look at the results of the task.
+ Can make the code look smaller (especially when using swift
+ */
+- (instancetype)continueWithExecutor:(BFExecutor *)executor
+                           with:(SimpleBFContinuationBlock)block;
+
+
+/*!
+ simple notatation when you don't need to look at the results of the task.
+ Can make the code look smaller (especially when using swift
+ */
+- (instancetype)continueWithExecutor:(BFExecutor *)executor
+                    withSuccess:(SimpleBFContinuationBlock)block;
+
 
 
 @end

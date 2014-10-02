@@ -134,6 +134,35 @@ typedef id(^BoltsExtras_RepeatingTimerBlock)(BOOL * STOP);
     return tcs.task;
 }
 
+- (instancetype)continueWith:(SimpleBFContinuationBlock)block
+{
+    return [self continueWithBlock:^id(BFTask *task) {
+        return block();
+    }];
+}
+
+- (instancetype)continueWithSuccess:(SimpleBFContinuationBlock)block
+{
+    return [self continueWithSuccessBlock:^id(BFTask *task) {
+        return block();
+    }];
+}
+
+- (instancetype)continueWithExecutor:(BFExecutor *)executor with:(SimpleBFContinuationBlock)block
+{
+    return [self continueWithExecutor:executor withBlock:^id(BFTask *task) {
+        return block();
+    }];
+}
+
+
+- (instancetype)continueWithExecutor:(BFExecutor *)executor withSuccess:(SimpleBFContinuationBlock)block
+{
+    return [self continueWithExecutor:executor withSuccessBlock:^id(BFTask *task) {
+        return block();
+    }];
+}
+
 
 - (BOOL)isSuccessful
 {
@@ -206,6 +235,7 @@ typedef id(^BoltsExtras_RepeatingTimerBlock)(BOOL * STOP);
 {
     return [self _trySetCompletionValuesWithTask:task throwExecptOnAsyncFail:NO];
 }
+
 
 - (void)setCompletionValuesWithTask:(BFTask *)task
 {
