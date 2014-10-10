@@ -163,6 +163,21 @@ typedef id(^BoltsExtras_RepeatingTimerBlock)(BOOL * STOP);
     }];
 }
 
+- (instancetype)continueWithMainThread:(SimpleBFContinuationBlock)block
+{
+    return [self continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+        return block();
+    }];
+}
+
+- (instancetype)continueOnSuccessWithMainThread:(SimpleBFContinuationBlock)block
+{
+    return [self continueWithExecutor:[BFExecutor mainThreadExecutor] withSuccessBlock:^id(BFTask *task) {
+            return block();
+    }];
+    
+}
+
 
 - (BOOL)isSuccessful
 {

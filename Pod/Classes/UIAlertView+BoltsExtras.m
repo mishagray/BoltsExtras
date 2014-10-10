@@ -123,14 +123,22 @@ static NSString *RI_TASK_COMPLETION_KEY = @"com.pushleaf.BoltsExtras.UIAlertView
      otherButtonArray:(NSArray *)otherButtonArray
         completionToken:(BECompletionToken *)token
 {
-    UIAlertView *alertView = [[UIAlertView alloc]
-                              initWithTitle:title
-                              message:message
-                              cancelButtonItem:[BFTaskItem itemWithLabel:cancelButtonLabel andTaskAction:cancelAction]
-                              otherButtonArray:otherButtonArray completionToken:token];
-                              
-    [alertView show];
-    return alertView.showTask;
+    BFTaskCompletionSource *tcs = [BFTaskCompletionSource taskCompletionSource];
+    [[BFExecutor mainThreadExecutor] execute:^{
+
+        UIAlertView *alertView = [[UIAlertView alloc]
+                                  initWithTitle:title
+                                  message:message
+                                  cancelButtonItem:[BFTaskItem itemWithLabel:cancelButtonLabel andTaskAction:cancelAction]
+                                  otherButtonArray:otherButtonArray completionToken:token];
+                                  
+        [alertView show];
+        [[alertView showTask] continueWithBlock:^id(BFTask *task) {
+            [tcs setCompletionValuesWithTask:task];
+            return task.result;
+        }];
+    }];
+    return tcs.task;
 }
 
 

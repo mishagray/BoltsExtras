@@ -124,6 +124,20 @@ typedef id(^BoltsExtras_RepeatingTimerBlock)(BOOL * STOP);
 - (instancetype)continueWithExecutor:(BFExecutor *)executor
                     withSuccess:(SimpleBFContinuationBlock)block;
 
+/*!
+ simple notatation when you don't need to look at the results of the task.
+ Can make the code look smaller (especially when using swift
+ */
+- (instancetype)continueWithMainThread:(SimpleBFContinuationBlock)block;
+
+/*!
+ simple notatation when you don't need to look at the results of the task.
+ Can make the code look smaller (especially when using swift
+ */
+- (instancetype)continueOnSuccessWithMainThread:(SimpleBFContinuationBlock)block;
+
+
+
 
 
 @end
