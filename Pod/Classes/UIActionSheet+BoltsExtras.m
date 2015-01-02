@@ -35,7 +35,7 @@ static NSString *RI_TASK_COMPLETION_KEY = @"com.pushleaf.BoltsExtras.UIActionShe
 @implementation UIActionSheet (BoltsExtras)
 
 
-- (id)initWithTitle:(NSString *)inTitle
+- (id)initWithTaskWithTitle:(NSString *)inTitle
    cancelButtonItem:(BFTaskItem *)inCancelButtonItem
 destructiveButtonItem:(BFTaskItem *)inDestructiveItem
    otherButtonArray:(NSArray*)inOtherButtonArray;

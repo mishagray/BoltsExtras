@@ -41,4 +41,12 @@
     return newItem;
 }
 
++(id)itemWithLabel:(NSString *)inLabel;
+{
+    BFTaskItem * newItem = [BFTaskItem item];
+    newItem.label = inLabel;
+    return newItem;
+}
+
+
 @end

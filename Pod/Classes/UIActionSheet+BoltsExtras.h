@@ -29,7 +29,7 @@
 
 @interface UIActionSheet (BoltsExtras) <UIActionSheetDelegate>
 
-- (id)initWithTitle:(NSString *)inTitle
+- (id)initWithTaskWithTitle:(NSString *)inTitle
           cancelButtonItem:(BFTaskItem *)inCancelButtonItem
      destructiveButtonItem:(BFTaskItem *)inDestructiveItem
           otherButtonArray:(NSArray*)inOtherButtonArray;

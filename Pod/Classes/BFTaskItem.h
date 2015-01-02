@@ -35,5 +35,6 @@ typedef id(^BFTaskItemActionBlock)();
 @property (strong, nonatomic) BFTaskItemActionBlock action;
 
 +(id)itemWithLabel:(NSString *)inLabel andTaskAction:(BFTaskItemActionBlock)action;
++(id)itemWithLabel:(NSString *)inLabel;
 
 @end

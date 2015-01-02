@@ -29,13 +29,13 @@
 @class BECompletionToken;
 @interface UIAlertView (BoltsExtras)
 
-+(BFTask*)showAlertWithTitle:(NSString *)title
++(BFTask*)showAlertTaskWithTitle:(NSString *)title
                 message:(NSString *)message
       cancelButtonTitle:(NSString*)cancelButtonLabel
      cancelButtonAction:(id (^)())cancelAction
        otherButtonArray:(NSArray *)otherButtonArray;
 
-+(BFTask*)showAlertWithTitle:(NSString *)title
++(BFTask*)showAlertTaskWithTitle:(NSString *)title
                      message:(NSString *)message
            cancelButtonTitle:(NSString*)cancelButtonLabel
           cancelButtonAction:(id (^)())cancelAction
@@ -44,14 +44,14 @@
 
 
 
-+(BFTask*)showAlertWithTitle:(NSString *)title
++(BFTask*)showAlertTaskWithTitle:(NSString *)title
                 message:(NSString *)message
       cancelButtonTitle:(NSString*)cancelButtonLabel
      cancelButtonAction:(id (^)())cancelAction
           okButtonTitle:(NSString*)okButtonLabel
          okButtonAction:(id (^)())okAction;
 
-+(BFTask*)showAlertWithTitle:(NSString *)title
++(BFTask*)showAlertTaskWithTitle:(NSString *)title
                      message:(NSString *)message
            cancelButtonTitle:(NSString*)cancelButtonLabel
           cancelButtonAction:(id (^)())cancelAction
