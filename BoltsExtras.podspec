@@ -9,7 +9,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "BoltsExtras"
-  s.version          = "0.4.8"
+  s.version          = "0.5.0"
   s.summary          = "A collection of stuff to make IOS Programming Easier with Bolts."
   s.description      = <<-DESC
                        A collection of stuff to make IOS Programming Easier with Bolts.
@@ -34,5 +34,5 @@ Pod::Spec.new do |s|
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   s.frameworks = 'UIKit'
-  s.dependency 'Bolts', '~> 1.1.2'
+  s.dependency 'Bolts', '~> 1.1.3'
 end
